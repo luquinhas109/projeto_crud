@@ -5,6 +5,18 @@ from models.aplicacao_insumo import AplicacaoInsumo
 from services.aplicacao_insumo_service import AplicacaoInsumoService
 
 
+def parse_quantidade(texto: str) -> float:
+    texto = texto.strip().lower()
+    # Remove unidades comuns como 'l', 'lt', 'litros', 'kg', 'g', 'ml'
+    for unidade in ["litros", "litro", "kg", "ml", "lt", "l", "g"]:
+        if texto.endswith(unidade):
+            texto = texto[:-len(unidade)].strip()
+            break
+    # Aceita vírgula como separador decimal (ex: 3,5 -> 3.5)
+    texto = texto.replace(",", ".")
+    return float(texto)
+
+
 service = AplicacaoInsumoService()
 
 
@@ -14,8 +26,10 @@ def cadastrar():
 
         id_safra = int(input("ID da safra: "))
         id_insumo = int(input("ID do insumo: "))
-        quantidade = float(input("Quantidade aplicada: "))
-        data = input("Data (DD/MM/AAAA): ")
+        quantidade = parse_quantidade(input("Quantidade aplicada: "))
+        data = input("Data (DD/MM/AAAA) [deixe vazio para hoje]: ").strip()
+        if not data:
+            data = datetime.now().strftime("%d/%m/%Y")
 
         aplicacao = AplicacaoInsumo(
             id_safra=id_safra,
@@ -67,10 +81,12 @@ def atualizar():
 
         aplicacao.id_safra = int(input("Novo ID da safra: "))
         aplicacao.id_insumo = int(input("Novo ID do insumo: "))
-        aplicacao.quantidade_aplicada = float(
-            input("Nova quantidade aplicada: ")
+        aplicacao.quantidade_aplicada = parse_quantidade(
+            input("Nova quantidade aplicada(Em Litros): ")
         )
-        aplicacao.data_aplicacao = input("Nova data (DD/MM/AAAA): ")
+        nova_data = input("Nova data (DD/MM/AAAA) [enter para manter]: ").strip()
+        if nova_data:
+            aplicacao.data_aplicacao = nova_data
 
         service.update(aplicacao)
         print("Aplicação atualizada com sucesso!")

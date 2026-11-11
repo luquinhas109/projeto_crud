@@ -6,11 +6,16 @@ from repositories.safra_database_repository import SafraRepository
 
 
 def validar_ano_agricola(valor):
-    if not re.fullmatch(r"\d{4}/\d{4}", valor):
-        raise ValueError(
-            "Ano agrícola inválido! Use AAAA/AAAA (ex: 2026/2027)."
-        )
-    return valor
+    valor = valor.strip()
+    # Aceita biênio de safra (ex: 2026/2027) ou ano único (ex: 2026)
+    if re.fullmatch(r"\d{4}/\d{4}", valor) or re.fullmatch(r"\d{4}", valor):
+        return valor
+    # Se o usuário digitar data com barras (ex: 21/11/2026), aceita também
+    if re.fullmatch(r"\d{2}/\d{2}/\d{4}", valor) or re.fullmatch(r"\d{4}-\d{2}-\d{2}", valor):
+        return valor
+    raise ValueError(
+        "Formato inválido! Use o ano agrícola (ex: 2026/2027 ou 2026)."
+    )
 
 
 def menu_safra():

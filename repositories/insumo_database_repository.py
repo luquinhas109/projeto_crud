@@ -1,20 +1,24 @@
 from models.insumo import Insumo
 from database.connector import connect
 
+
+
+
 class InsumoRepository:
     def salvar(self, insumo: Insumo):
         conexao = connect()
         cursor = conexao.cursor()
 
         sql = """
-        INSERT INTO Insumo (nome_comercial, tipo_insumo, custo_unitario)
-        VALUES (%s, %s, %s)
+        INSERT INTO Insumo (nome_comercial, tipo_insumo, custo_unitario, quantidade_litros)
+        VALUES (%s, %s, %s, %s)
         """
 
         valores = (
             insumo.nome_comercial,
-            insumo.tipo_unitario,
-            insumo.custo_unitario
+            insumo.tipo_insumo,
+            insumo.custo_unitario,
+            insumo.quantidade_litros
         )
 
         cursor.execute(sql, valores)
@@ -31,7 +35,7 @@ class InsumoRepository:
         conexao = connect()
         cursor = conexao.cursor(dictionary=True)
 
-        cursor.execute("SELECT * FROEM Insumo")
+        cursor.execute("SELECT * FROM Insumo")
         linhas = cursor.fetchall()
 
         cursor.close()
@@ -44,7 +48,8 @@ class InsumoRepository:
                 id_insumo = linha["id_insumo"],
                 nome_comercial = linha["nome_comercial"],
                 tipo_insumo = linha["tipo_insumo"],
-                custo_unitario = float(linha["custo_unitario"])
+                custo_unitario = float(linha["custo_unitario"]),
+                quantidade_litros = float(linha.get("quantidade_litros") or 0.0)
             )
 
             lista_insumos.append(insumo)
@@ -57,7 +62,7 @@ class InsumoRepository:
 
         sql = "SELECT * FROM Insumo WHERE id_insumo = %s"
 
-        cursor.execute(sql, (id_insumo))
+        cursor.execute(sql, (id_insumo,))
         linha = cursor.fetchone()
 
         cursor.close()
@@ -70,7 +75,8 @@ class InsumoRepository:
             id_insumo = linha["id_insumo"],
             nome_comercial=linha["nome_comercial"],
             tipo_insumo = linha["tipo_insumo"],
-            custo_unitario = float(linha["custo_unitario"])
+            custo_unitario = float(linha["custo_unitario"]),
+            quantidade_litros = float(linha.get("quantidade_litros") or 0.0)
         )
 
     def update(self, insumo: Insumo) -> bool:
@@ -82,6 +88,7 @@ class InsumoRepository:
         SET nome_comercial = %s,
             tipo_insumo = %s,
             custo_unitario = %s,
+            quantidade_litros = %s
         WHERE id_insumo = %s
         """
 
@@ -89,6 +96,7 @@ class InsumoRepository:
             insumo.nome_comercial,
             insumo.tipo_insumo,
             insumo.custo_unitario,
+            insumo.quantidade_litros,
             insumo.id_insumo
         )
 
@@ -108,7 +116,7 @@ class InsumoRepository:
 
         sql = "DELETE FROM Insumo WHERE id_insumo = %s"
 
-        cursor.execute(sql, (id_insumo))
+        cursor.execute(sql, (id_insumo,))
         conexao.commit()
 
         sucesso = cursor.rowcount > 0

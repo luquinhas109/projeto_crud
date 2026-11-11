@@ -23,6 +23,20 @@ class AplicacaoInsumoService:
         if insumo is None:
             raise ValueError("Insumo não encontrado.")
 
+        # Validação e baixa no estoque de litros do insumo
+        qtd_necessaria = float(aplicacao.quantidade_aplicada)
+        qtd_disponivel = float(insumo.quantidade_litros)
+
+        if qtd_necessaria > qtd_disponivel:
+            raise ValueError(
+                f"Estoque insuficiente de '{insumo.nome_comercial}'! "
+                f"Disponível: {qtd_disponivel:.2f} L | Solicitado: {qtd_necessaria:.2f} L"
+            )
+
+        # Abate do estoque
+        insumo.quantidade_litros = round(qtd_disponivel - qtd_necessaria, 2)
+        self.insumo_repo.update(insumo)
+
         aplicacao.calcular_custo_total(
             float(insumo.custo_unitario)
         )
@@ -66,5 +80,15 @@ class AplicacaoInsumoService:
     def delete(self, id_aplicacao: int):
         if id_aplicacao <= 0:
             raise ValueError("Informe um ID válido.")
+
+        aplicacao = self.aplicacao_repo.buscar_por_id(id_aplicacao)
+        if aplicacao:
+            # Estorna a quantidade de volta ao estoque do insumo
+            insumo = self.insumo_repo.buscar_por_id(aplicacao.id_insumo)
+            if insumo:
+                insumo.quantidade_litros = round(
+                    float(insumo.quantidade_litros) + float(aplicacao.quantidade_aplicada), 2
+                )
+                self.insumo_repo.update(insumo)
 
         return self.aplicacao_repo.delete(id_aplicacao)

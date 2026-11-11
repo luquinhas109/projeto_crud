@@ -25,7 +25,8 @@ def menu_insumo():
             try:
                 nome = input("Nome comercial: ").strip()
                 tipo = input("Tipo de insumo: ").strip()
-                custo = float(input("Custo unitário: R$ "))
+                custo = float(input("Custo unitário por Litro (ex: 100): R$ "))
+                quantidade = float(input("Quantidade total em estoque (Litros): "))
 
                 if not nome or not tipo:
                     raise ValueError("Preencha todos os campos.")
@@ -33,10 +34,14 @@ def menu_insumo():
                 if custo < 0:
                     raise ValueError("O custo não pode ser negativo.")
 
+                if quantidade < 0:
+                    raise ValueError("A quantidade não pode ser negativa.")
+
                 novo_insumo = Insumo(
                     nome_comercial=nome,
                     tipo_insumo=tipo,
-                    custo_unitario=custo
+                    custo_unitario=custo,
+                    quantidade_litros=quantidade
                 )
 
                 repo.salvar(novo_insumo)
@@ -98,7 +103,8 @@ def menu_insumo():
 
                 nome = input("Novo nome: ").strip()
                 tipo = input("Novo tipo: ").strip()
-                custo = float(input("Novo custo unitário: R$ "))
+                custo = float(input("Novo custo unitário por Litro: R$ "))
+                quantidade = float(input("Nova quantidade em estoque (Litros): "))
 
                 if not nome or not tipo:
                     raise ValueError("Preencha todos os campos.")
@@ -106,11 +112,15 @@ def menu_insumo():
                 if custo < 0:
                     raise ValueError("O custo não pode ser negativo.")
 
+                if quantidade < 0:
+                    raise ValueError("A quantidade não pode ser negativa.")
+
                 insumo_atualizado = Insumo(
                     id_insumo=id_atualizar,
                     nome_comercial=nome,
                     tipo_insumo=tipo,
-                    custo_unitario=custo
+                    custo_unitario=custo,
+                    quantidade_litros=quantidade
                 )
 
                 if repo.update(insumo_atualizado):
