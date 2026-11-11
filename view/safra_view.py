@@ -41,7 +41,7 @@ def menu_safra():
                 nome = input("Nome da Safra: ").strip()
                 cultura = input("Cultura: ").strip()
                 ano = validar_ano_agricola(
-                    input("Ano Agrícola (AAAA/AAAA): ").strip()
+                    input("Ano Agrícola (Ano - Mês - Dia): ").strip()
                 )
                 area = float(input("Área em Hectares: "))
 
