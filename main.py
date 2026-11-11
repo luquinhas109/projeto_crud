@@ -1,30 +1,32 @@
-import sys
-import os
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "agrotech"))
+from view.safra_view import menu_safra
+from view.insumo_view import menu_insumo
+from view.aplicacao_insumo_view import menu_aplicacao_insumo
 
-
-# pyrefly: ignore[missing-import]
-from views.safra_view import menu_safra
 
 def main():
     while True:
-        print("\n" + "="*40)
-        print("SISTEMA AGROTECH")
-        print("="*40)
+        print("\n========== SISTEMA AGROTECH ==========")
         print("1 - Gerenciar Safras")
+        print("2 - Gerenciar Insumos")
+        print("3 - Gerenciar Aplicações de Insumos")
         print("0 - Sair")
-        print("="*40)
 
         opcao = input("Escolha uma opção: ").strip()
 
         if opcao == "1":
             menu_safra()
+        elif opcao == "2":
+            menu_insumo()
+        elif opcao == "3":
+            menu_aplicacao_insumo()
         elif opcao == "0":
-            print("\nEncerrando o programa.")
+            print("Encerrando o programa.")
             break
         else:
-            print("\nOpção inválida.")
+            print("Opção inválida!")
+
 
 if __name__ == "__main__":
     main()
+
